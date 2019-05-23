@@ -17,3 +17,6 @@ Currently, there is no existing functionality
 - Create commit from changed files
   - Store file diffs
   - Store commit information
+- List commits
+- Checkout specific commit
+- Abstract file system
