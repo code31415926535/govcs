@@ -90,6 +90,15 @@ func (v Vcs) RemoveFile(path string) error {
 	return engine.RemoveDiffFromIndex(v.fs, relPath)
 }
 
+func (v Vcs) CommitChanges(message string) error {
+	commit, err := engine.CreateNewCommit(v.fs, message)
+	if err != nil {
+		return err
+	}
+
+	return engine.ChangeHeadForce(v.fs, commit)
+}
+
 func (v Vcs) relativePath(path string) (string, error) {
 	if filepath.IsAbs(path) {
 		return filepath.Rel(v.root, path)

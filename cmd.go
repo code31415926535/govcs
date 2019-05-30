@@ -34,3 +34,12 @@ func RemoveFile(path string) error {
 
 	return vcs.RemoveFile(path)
 }
+
+func CommitChanges(path string, message string) error {
+	vcs, err := LoadDefaultVcs(path)
+	if err != nil {
+		return err
+	}
+
+	return vcs.CommitChanges(message)
+}

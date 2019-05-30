@@ -47,3 +47,25 @@ func Test_Index_CanRemoveDiffFromIndexFile(t *testing.T) {
 	assert.Nil(t, err, "Failed to remove diff from index file")
 	assertIndexFile(t, fs, emptyIndexFile)
 }
+
+func Test_Index_CannotChangeDirtyHead(t *testing.T) {
+	fs := metadata.NewInMemoryMetadata()
+
+	err := CreateNewIndex(fs)
+	assert.Nil(t, err, "Failed to create index file")
+	err = AddDiffToIndex(fs, "test.txt", "12345678")
+	assert.Nil(t, err, "Failed to add diff to index file")
+	err = ChangeHead(fs, "abcdefgh")
+	assert.NotNil(t, err, "Could change dirty head")
+}
+
+func Test_Index_CanForceChangeDirtyHead(t *testing.T) {
+	fs := metadata.NewInMemoryMetadata()
+
+	err := CreateNewIndex(fs)
+	assert.Nil(t, err, "Failed to create index file")
+	err = AddDiffToIndex(fs, "test.txt", "12345678")
+	assert.Nil(t, err, "Failed to add diff to index file")
+	err = ChangeHeadForce(fs, "abcdefgh")
+	assert.Nil(t, err, "Could not force change dirty head")
+}

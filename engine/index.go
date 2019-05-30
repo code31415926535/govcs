@@ -2,6 +2,7 @@ package engine
 
 import (
 	"encoding/json"
+	"fmt"
 	"govcs/metadata"
 )
 
@@ -35,6 +36,30 @@ func RemoveDiffFromIndex(fs metadata.Metadata, path string) error {
 		return err
 	}
 	delete(i.Diffs, path)
+
+	return i.save(fs)
+}
+
+func ChangeHead(fs metadata.Metadata, hash string) error {
+	return changeHead(fs, hash, false)
+}
+
+func ChangeHeadForce(fs metadata.Metadata, hash string) error {
+	return changeHead(fs, hash, true)
+}
+
+func changeHead(fs metadata.Metadata, hash string, force bool) error {
+	i, err := LoadIndex(fs)
+	if err != nil {
+		return err
+	}
+
+	if !force && len(i.Diffs) != 0 {
+		return fmt.Errorf("could not change head due to staged changes")
+	}
+
+	i.Diffs = make(map[string]string)
+	i.Head = hash
 
 	return i.save(fs)
 }

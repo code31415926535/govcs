@@ -24,6 +24,8 @@ func main() {
 		cmdRemove(os.Args[2:])
 	case "stat":
 		cmdStat(os.Args[2:])
+	case "commit":
+		cmdCommit(os.Args[2:])
 	default:
 		quit(fmt.Sprintf("Unknown command %s", cmd))
 	}
@@ -68,6 +70,17 @@ func cmdStat(args []string) {
 	stat.Print()
 }
 
+func cmdCommit(args []string) {
+	if len(args) != 1 {
+		quit("Commit takes exactly 1 argument(s)")
+	}
+
+	err := govcs.CommitChanges(".", args[0])
+	if err != nil {
+		quit(err.Error())
+	}
+}
+
 func ensureAbsolutePath(path string) string {
 	if !filepath.IsAbs(path) {
 		return filepath.Join(getwd(), path)
@@ -91,6 +104,9 @@ func printHelp() {
 	fmt.Println("Available commands:")
 	fmt.Println("  init - initialize a repo.")
 	fmt.Println("  add <file> - add file to staging area.")
+	fmt.Println("  remove <file> - remove file from staging area.")
+	fmt.Println("  stat - print current head and staging area.")
+	fmt.Println("  commit <message> commit changes.")
 }
 
 func quit(message string) {

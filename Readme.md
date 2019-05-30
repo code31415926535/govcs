@@ -7,6 +7,7 @@ The primary goal here is to write a simple version control system.
 
 - Create repository with no configuration
 - Check current status
+- Add files and commit changes
 
 ## Usage
 
@@ -15,14 +16,13 @@ govcs init # init empty repository
 govcs add <file> # add file to staging area
 govcs remove <file> # remove file from staging area
 govcs stat # check status
+govcs commit <message> # commit changes
 ```
 
 ## Planned
 
-- Create commit from changed files
-  - Store file diffs
-  - Store commit information
+- Minor cleanup
 - List commits
-- Checkout specific commit
 - End-to-end tests
+- Checkout specific commit
 - Abstract file system
