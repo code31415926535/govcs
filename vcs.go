@@ -81,6 +81,15 @@ func (v Vcs) AddFile(path string) error {
 	return engine.AddDiffToIndex(v.fs, relPath, hash)
 }
 
+func (v Vcs) RemoveFile(path string) error {
+	relPath, err := v.relativePath(path)
+	if err != nil {
+		return err
+	}
+
+	return engine.RemoveDiffFromIndex(v.fs, relPath)
+}
+
 func (v Vcs) relativePath(path string) (string, error) {
 	if filepath.IsAbs(path) {
 		return filepath.Rel(v.root, path)

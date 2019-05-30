@@ -26,8 +26,12 @@ type Status struct {
 func (s Status) Print() {
 	fmt.Printf("Ref: %s\n", s.Ref)
 	fmt.Println()
-	fmt.Println("Staged changes:")
-	for _, f := range s.ChangedFiles {
-		fmt.Printf("  %s\n", f)
+	if len(s.ChangedFiles) > 0 {
+		fmt.Println("Staged changes:")
+		for _, f := range s.ChangedFiles {
+			fmt.Printf("  %s\n", f)
+		}
+	} else {
+		fmt.Println("No changes staged.")
 	}
 }

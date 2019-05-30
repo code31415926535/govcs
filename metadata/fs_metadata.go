@@ -26,6 +26,11 @@ func (meta *actualMetadata) WriteFile(path string, data []byte) error {
 	return ioutil.WriteFile(absPath, data, defaultPerm)
 }
 
+func (meta *actualMetadata) RemoveFile(path string) error {
+	absPath := filepath.Join(meta.root, path)
+	return os.Remove(absPath)
+}
+
 func (meta *actualMetadata) FileExists(path string) bool {
 	absPath := filepath.Join(meta.root, path)
 	if info, err := os.Stat(absPath); err == nil && info.Mode().IsRegular() {

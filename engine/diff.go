@@ -38,6 +38,10 @@ func CreateNewDiffOver(fs metadata.Metadata, path, prevDiff string, data []byte)
 	return d.save(fs)
 }
 
+func RemoveDiff(fs metadata.Metadata, hash string) error {
+	return fs.RemoveFile(filepath.Join("diffs", hash))
+}
+
 func loadFileFromDiff(fs metadata.Metadata, hash string) ([]byte, error) {
 	d, err := loadDiff(fs, hash)
 	if err != nil {

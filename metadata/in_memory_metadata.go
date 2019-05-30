@@ -19,6 +19,11 @@ func (meta *inMemoryMetadata) WriteFile(path string, data []byte) error {
 	return nil
 }
 
+func (meta *inMemoryMetadata) RemoveFile(path string) error {
+	delete(meta.files, path)
+	return nil
+}
+
 func (meta *inMemoryMetadata) FileExists(path string) bool {
 	_, ok := meta.files[path]
 	return ok

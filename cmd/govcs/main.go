@@ -20,6 +20,8 @@ func main() {
 		cmdInit(os.Args[2:])
 	case "add":
 		cmdAdd(os.Args[2:])
+	case "remove":
+		cmdRemove(os.Args[2:])
 	case "stat":
 		cmdStat(os.Args[2:])
 	default:
@@ -40,6 +42,17 @@ func cmdAdd(args []string) {
 	}
 
 	err := govcs.AddFile(ensureAbsolutePath(args[0]))
+	if err != nil {
+		quit(err.Error())
+	}
+}
+
+func cmdRemove(args []string) {
+	if len(args) != 1 {
+		quit("Remove takes exactly 1 argument(s)")
+	}
+
+	err := govcs.RemoveFile(ensureAbsolutePath(args[0]))
 	if err != nil {
 		quit(err.Error())
 	}

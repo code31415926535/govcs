@@ -22,6 +22,23 @@ func AddDiffToIndex(fs metadata.Metadata, path, hash string) error {
 	return i.save(fs)
 }
 
+func RemoveDiffFromIndex(fs metadata.Metadata, path string) error {
+	i, err := LoadIndex(fs)
+	if err != nil {
+		return err
+	}
+
+	diff := i.Diffs[path]
+	// REVIEW - Where should this end up? Here or in vcs
+	err = RemoveDiff(fs, diff)
+	if err != nil {
+		return err
+	}
+	delete(i.Diffs, path)
+
+	return i.save(fs)
+}
+
 func LoadIndex(fs metadata.Metadata) (*Index, error) {
 	indexData, err := fs.ReadFile(indexFilePath)
 	if err != nil {

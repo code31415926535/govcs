@@ -25,3 +25,12 @@ func AddFile(path string) error {
 
 	return vcs.AddFile(path)
 }
+
+func RemoveFile(path string) error {
+	vcs, err := LoadDefaultVcs(path)
+	if err != nil {
+		return err
+	}
+
+	return vcs.RemoveFile(path)
+}

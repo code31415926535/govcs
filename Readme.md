@@ -13,6 +13,7 @@ The primary goal here is to write a simple version control system.
 ```sh
 govcs init # init empty repository
 govcs add <file> # add file to staging area
+govcs remove <file> # remove file from staging area
 govcs stat # check status
 ```
 

@@ -45,6 +45,9 @@ type Metadata interface {
 	//	If file already exists, it should be overwritten.
 	WriteFile(path string, data []byte) error
 
+	// RemoveFile removes file at path.
+	RemoveFile(path string) error
+
 	// Returns if the current file exists or not
 	FileExists(path string) bool
 }
