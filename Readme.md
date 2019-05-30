@@ -5,15 +5,18 @@ The primary goal here is to write a simple version control system.
 
 ## Features
 
-Currently, there are no features.
+- Create repository with no configuration.
 
 ## Usage
 
-Currently, there is no existing functionality
+```sh
+govcs init # init empty repository
+govcs add test.txt # add file to staging area
+```
 
 ## Planned
 
-- Create repository with no configuration
+- Check current status
 - Create commit from changed files
   - Store file diffs
   - Store commit information
