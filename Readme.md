@@ -5,21 +5,23 @@ The primary goal here is to write a simple version control system.
 
 ## Features
 
-- Create repository with no configuration.
+- Create repository with no configuration
+- Check current status
 
 ## Usage
 
 ```sh
 govcs init # init empty repository
-govcs add test.txt # add file to staging area
+govcs add <file> # add file to staging area
+govcs stat # check status
 ```
 
 ## Planned
 
-- Check current status
 - Create commit from changed files
   - Store file diffs
   - Store commit information
 - List commits
 - Checkout specific commit
+- End-to-end tests
 - Abstract file system

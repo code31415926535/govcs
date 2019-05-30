@@ -39,23 +39,6 @@ func loadDefaultVcs(path string) (Vcs, error) {
 	return loadDefaultVcs(parent)
 }
 
-func Init(path string) error {
-	vcs, err := NewDefaultVcs(path)
-	if err != nil {
-		return err
-	}
-	return vcs.Init()
-}
-
-func AddFile(path string) error {
-	vcs, err := LoadDefaultVcs(path)
-	if err != nil {
-		return err
-	}
-
-	return vcs.AddFile(path)
-}
-
 type Vcs struct {
 	fs   metadata.Metadata
 	root string
@@ -67,6 +50,15 @@ func (v Vcs) Init() error {
 	}
 
 	return engine.CreateNewIndex(v.fs)
+}
+
+func (v Vcs) Stat() (Status, error) {
+	i, err := engine.LoadIndex(v.fs)
+	if err != nil {
+		return Status{}, err
+	}
+
+	return newStatusFromIndex(i), nil
 }
 
 func (v Vcs) AddFile(path string) error {

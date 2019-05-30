@@ -20,6 +20,8 @@ func main() {
 		cmdInit(os.Args[2:])
 	case "add":
 		cmdAdd(os.Args[2:])
+	case "stat":
+		cmdStat(os.Args[2:])
 	default:
 		quit(fmt.Sprintf("Unknown command %s", cmd))
 	}
@@ -41,6 +43,16 @@ func cmdAdd(args []string) {
 	if err != nil {
 		quit(err.Error())
 	}
+}
+
+func cmdStat(args []string) {
+	stat, err := govcs.Stat(".")
+	if err != nil {
+		quit(err.Error())
+	}
+
+	// TODO: this should be implemented here
+	stat.Print()
 }
 
 func ensureAbsolutePath(path string) string {
