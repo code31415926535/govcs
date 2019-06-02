@@ -1,5 +1,8 @@
 # Go Version Control System
 
+> NOTE: This repo is currently work in progress. Please check back in
+> a couple of days.
+
 This is an educational project with no practical purpose in mind.
 The primary goal here is to write a simple version control system.
 
@@ -24,5 +27,5 @@ govcs list-commits # list commits
 ## Planned
 
 - End-to-end tests
-- Checkout specific commit
-- Abstract file system
+- Checkout commit
+- Implement branching
