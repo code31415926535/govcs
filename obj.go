@@ -35,3 +35,51 @@ func (s Status) Print() {
 		fmt.Println("No changes staged.")
 	}
 }
+
+func newCommit(id string, c *engine.Commit) Commit {
+	return Commit{
+		ID:      id,
+		Prev:    c.Prev,
+		Message: c.Message,
+	}
+}
+
+type Commit struct {
+	ID      string
+	Prev    string
+	Message string
+}
+
+// TODO: Detach print from obj
+func (c Commit) Print() {
+	fmt.Printf("%s -> %s  %s\n", c.ID, c.Prev, c.Message)
+}
+
+func newCommits(head string, cs []*engine.Commit) Commits {
+	commits := Commits{}
+
+	if len(cs) == 0 {
+		return commits
+	}
+
+	for id, c := range cs[:len(cs)-1] {
+		commits = append(commits, newCommit(cs[id+1].Prev, c))
+	}
+	commits = append(commits, newCommit(head, cs[len(cs)-1]))
+
+	return commits
+}
+
+type Commits []Commit
+
+// TODO: Detach print from obj
+func (cs Commits) Print() {
+	if len(cs) == 0 {
+		fmt.Println("No commits.")
+	} else {
+		last := len(cs) - 1
+		for i := range cs {
+			cs[last-i].Print()
+		}
+	}
+}

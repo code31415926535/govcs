@@ -10,8 +10,12 @@ import (
 	"github.com/gabstv/go-bsdiff/pkg/bspatch"
 )
 
-// CreateNewDiff creates a new diff object for a new file at *path*
-//	with *data*. The diff object will be saved in *fs* metadata store.
+const diffDir = "diffs"
+
+// CreateNewDiff creates a new diff object for a new file at path
+// with data and save the newly created diff.
+//
+// The return value is the hash of the diff.
 func CreateNewDiff(fs metadata.Metadata, path string, data []byte) (string, error) {
 	d, err := newDiff(path, []byte{}, data, "")
 	if err != nil {
@@ -21,25 +25,33 @@ func CreateNewDiff(fs metadata.Metadata, path string, data []byte) (string, erro
 	return d.filename(), d.save(fs)
 }
 
-// CreateNewDiffOver creates a new diff object for an existing file at *path*
-//	with *data*. The *prevDiff* indicates the last revision of the file to be
-//	used when creating the diff. The diff object will be saved in *fs* metadata store.
-func CreateNewDiffOver(fs metadata.Metadata, path, prevDiff string, data []byte) error {
+// CreateNewDiffOver creates a new diff object for an existing file at path
+// with data. The prevDiff indicates the last revision of the file to be
+// used when creating the diff. The diff object will be saved in fs metadata store.
+//
+// The return value is the hash of the diff.
+func CreateNewDiffOver(fs metadata.Metadata, path, prevDiff string, data []byte) (string, error) {
 	old, err := loadFileFromDiff(fs, prevDiff)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	d, err := newDiff(path, old, data, prevDiff)
 	if err != nil {
-		return err
+		return "", err
 	}
 
-	return d.save(fs)
+	return d.filename(), d.save(fs)
 }
 
+// RemoveDiff removes diff object identified by hash. This only
+// deletes the diff file, it does not check if the diff is
+// referenced anywhere.
+//
+// FIXME: This can potentially cause issues where a diff can
+// be deleted corrupting the repository.
 func RemoveDiff(fs metadata.Metadata, hash string) error {
-	return fs.RemoveFile(filepath.Join("diffs", hash))
+	return fs.RemoveFile(filepath.Join(diffDir, hash))
 }
 
 func loadFileFromDiff(fs metadata.Metadata, hash string) ([]byte, error) {
@@ -60,12 +72,12 @@ func loadFileFromDiff(fs metadata.Metadata, hash string) ([]byte, error) {
 	return d.apply(base)
 }
 
-// TODO: Implement load for diff
 func loadDiff(fs metadata.Metadata, hash string) (*diff, error) {
-	d, err := fs.ReadFile(filepath.Join("diffs", hash))
+	d, err := fs.ReadFile(filepath.Join(diffDir, hash))
 	if err != nil {
 		return nil, err
 	}
+	// Split
 	parts := bytes.Split(d, []byte("\000BSDIFF40"))
 	if len(parts) != 2 {
 		return nil, fmt.Errorf("invalid diff: %s", hash)
@@ -99,7 +111,7 @@ func (d *diff) apply(data []byte) ([]byte, error) {
 }
 
 func (d *diff) save(fs metadata.Metadata) error {
-	return fs.WriteFile(filepath.Join("diffs", d.filename()), d.data())
+	return fs.WriteFile(filepath.Join(diffDir, d.filename()), d.data())
 }
 
 func (d *diff) filename() string {

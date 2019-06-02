@@ -1,5 +1,7 @@
 package govcs
 
+// TODO: document
+
 func Init(path string) error {
 	vcs, err := NewDefaultVcs(path)
 	if err != nil {
@@ -42,4 +44,13 @@ func CommitChanges(path string, message string) error {
 	}
 
 	return vcs.CommitChanges(message)
+}
+
+func ListCommits(path string) (Commits, error) {
+	vcs, err := LoadDefaultVcs(path)
+	if err != nil {
+		return Commits{}, err
+	}
+
+	return vcs.ListCommits()
 }

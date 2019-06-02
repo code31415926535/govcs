@@ -26,6 +26,8 @@ func main() {
 		cmdStat(os.Args[2:])
 	case "commit":
 		cmdCommit(os.Args[2:])
+	case "list-commits":
+		cmdListCommits(os.Args[2:])
 	default:
 		quit(fmt.Sprintf("Unknown command %s", cmd))
 	}
@@ -66,7 +68,6 @@ func cmdStat(args []string) {
 		quit(err.Error())
 	}
 
-	// TODO: this should be implemented here
 	stat.Print()
 }
 
@@ -79,6 +80,15 @@ func cmdCommit(args []string) {
 	if err != nil {
 		quit(err.Error())
 	}
+}
+
+func cmdListCommits(args []string) {
+	commits, err := govcs.ListCommits(".")
+	if err != nil {
+		quit(err.Error())
+	}
+
+	commits.Print()
 }
 
 func ensureAbsolutePath(path string) string {
@@ -106,7 +116,8 @@ func printHelp() {
 	fmt.Println("  add <file> - add file to staging area.")
 	fmt.Println("  remove <file> - remove file from staging area.")
 	fmt.Println("  stat - print current head and staging area.")
-	fmt.Println("  commit <message> commit changes.")
+	fmt.Println("  commit <message> - commit changes.")
+	fmt.Println("  list-commits - list commits.")
 }
 
 func quit(message string) {
