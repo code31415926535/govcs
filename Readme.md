@@ -1,4 +1,5 @@
 # Go Version Control System
+[![Go Report Card](https://goreportcard.com/badge/github.com/code31415926535/govcs)](https://goreportcard.com/report/github.com/code31415926535/govcs)
 
 > NOTE: This repo is currently work in progress. Please check back in
 > a couple of days.
