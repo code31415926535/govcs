@@ -3,7 +3,8 @@ package engine
 import (
 	"encoding/json"
 	"fmt"
-	"govcs/metadata"
+
+	"github.com/code31415926535/govcs/metadata"
 )
 
 const indexFilePath = "index"

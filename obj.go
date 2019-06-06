@@ -2,7 +2,7 @@ package govcs
 
 import (
 	"fmt"
-	"govcs/engine"
+	"github.com/code31415926535/govcs/engine"
 )
 
 func newStatusFromIndex(i *engine.Index) Status {

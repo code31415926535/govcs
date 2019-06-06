@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
-	"govcs"
 	"os"
 	"path/filepath"
+
+	"github.com/code31415926535/govcs"
 )
 
 func main() {
