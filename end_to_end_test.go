@@ -3,11 +3,12 @@ package govcs_test
 import (
 	"crypto/md5"
 	"fmt"
-	"govcs"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/code31415926535/govcs"
 
 	"github.com/stretchr/testify/assert"
 )

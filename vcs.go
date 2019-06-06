@@ -2,8 +2,8 @@ package govcs
 
 import (
 	"fmt"
-	"govcs/engine"
-	"govcs/metadata"
+	"github.com/code31415926535/govcs/engine"
+	"github.com/code31415926535/govcs/metadata"
 	"io/ioutil"
 	"path/filepath"
 )

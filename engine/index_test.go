@@ -1,7 +1,7 @@
 package engine
 
 import (
-	"govcs/metadata"
+	"github.com/code31415926535/govcs/metadata"
 	"testing"
 
 	"github.com/stretchr/testify/assert"

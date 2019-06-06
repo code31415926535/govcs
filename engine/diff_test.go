@@ -2,7 +2,7 @@ package engine
 
 import (
 	"bytes"
-	"govcs/metadata"
+	"github.com/code31415926535/govcs/metadata"
 	"path/filepath"
 	"testing"
 

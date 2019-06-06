@@ -3,8 +3,9 @@ package engine
 import (
 	"bytes"
 	"fmt"
-	"govcs/metadata"
 	"path/filepath"
+
+	"github.com/code31415926535/govcs/metadata"
 
 	"github.com/gabstv/go-bsdiff/pkg/bsdiff"
 	"github.com/gabstv/go-bsdiff/pkg/bspatch"
