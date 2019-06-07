@@ -1,8 +1,9 @@
 package engine
 
 import (
-	"github.com/code31415926535/govcs/metadata"
 	"testing"
+
+	"github.com/code31415926535/govcs/metadata"
 
 	"path/filepath"
 
@@ -53,4 +54,22 @@ func Test_Commit_CanListAllCommits(t *testing.T) {
 	commits2, err := LoadCommits(fs, 2)
 	assert.Nil(t, err, "could not load commits")
 	assert.Equal(t, 2, len(commits2), "could not partially load commits")
+}
+
+func Test_Commit_FindLatestDiffOfFile(t *testing.T) {
+	fs := metadata.NewInMemoryMetadata()
+
+	err := CreateNewIndex(fs)
+	assert.Nil(t, err, "could not create index file")
+	createAndAddDiffAndCommit(t, fs, "test.txt", "Hello World", "initial commit")
+	createAndAddDiffAndCommit(t, fs, "Readme.txt", "Dummy repo\n\nThis is a dummy repo", "adding readme")
+	createAndAddDiffAndCommit(t, fs, "asdf.txt", "asdf", "adding asdf")
+
+	diff, errDiff := FindLatestDiffOfFile(fs, "test.txt")
+	assert.Nil(t, errDiff, "could not find latest diff")
+	assert.NotEqual(t, "", diff, "no diff returned")
+
+	diff2, errDiff2 := FindLatestDiffOfFile(fs, "none.txt")
+	assert.Nil(t, errDiff2, "could not find latest diff")
+	assert.Equal(t, "", diff2, "diff returned")
 }

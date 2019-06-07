@@ -39,13 +39,13 @@ func LoadCommits(fs metadata.Metadata, maxCount int) ([]*Commit, error) {
 }
 
 func loadCommits(fs metadata.Metadata, hash string, remaining int) ([]*Commit, error) {
+	if remaining == 0 || hash == "" {
+		return []*Commit{}, nil
+	}
+
 	c, err := loadCommit(fs, hash)
 	if err != nil {
 		return nil, err
-	}
-
-	if remaining == 1 || c.Prev == "" {
-		return []*Commit{c}, nil
 	}
 
 	partialRes, err := loadCommits(fs, c.Prev, remaining-1)

@@ -2,10 +2,11 @@ package govcs
 
 import (
 	"fmt"
-	"github.com/code31415926535/govcs/engine"
-	"github.com/code31415926535/govcs/metadata"
 	"io/ioutil"
 	"path/filepath"
+
+	"github.com/code31415926535/govcs/engine"
+	"github.com/code31415926535/govcs/metadata"
 )
 
 var (
@@ -77,10 +78,22 @@ func (v Vcs) AddFile(path string) error {
 		return err
 	}
 
-	// TODO: Search commit history for existing file here.
-	hash, err := engine.CreateNewDiff(v.fs, relPath, data)
+	prevHash, err := engine.FindLatestDiffOfFile(v.fs, relPath)
 	if err != nil {
 		return err
+	}
+
+	hash := ""
+	if prevHash != "" {
+		hash, err = engine.CreateNewDiffOver(v.fs, relPath, prevHash, data)
+		if err != nil {
+			return err
+		}
+	} else {
+		hash, err = engine.CreateNewDiff(v.fs, relPath, data)
+		if err != nil {
+			return err
+		}
 	}
 
 	return engine.AddDiffToIndex(v.fs, relPath, hash)

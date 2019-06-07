@@ -78,11 +78,98 @@ func Test_EndToEnd(t *testing.T) {
 		assert.Equal(t, "74efab7ddf22ce55ff90792fbed4f979", calculateRepoHash(t, repoRoot))
 	})
 
+	t.Run("AddingSameFileTwiceDoesNothing", func(t *testing.T) {
+		repo, err := govcs.LoadDefaultVcs(repoRoot)
+		assert.Nil(t, err, "could not load repo")
+
+		errAdd := repo.AddFile(filepath.Join(repoRoot, "roses.poem"))
+		assert.Nil(t, errAdd, "could not add file")
+
+		assertDiffExists(t, repoRoot, "0cec383d6dbf06d28eca96ed97009731")
+
+		errAdd2 := repo.AddFile(filepath.Join(repoRoot, "roses.poem"))
+		assert.Nil(t, errAdd2, "could not add file")
+
+		assertDiffExists(t, repoRoot, "0cec383d6dbf06d28eca96ed97009731")
+		assertDiffCount(t, repoRoot, 2)
+
+		errRemove := repo.RemoveFile(filepath.Join(repoRoot, "roses.poem"))
+		assert.Nil(t, errRemove, "could add non existent file")
+
+		// Repo needs to be unchanged
+		assert.Equal(t, "74efab7ddf22ce55ff90792fbed4f979", calculateRepoHash(t, repoRoot))
+	})
+
+	t.Run("AddingFileThenEditingItThenAddingItAgain", func(t *testing.T) {
+		repo, err := govcs.LoadDefaultVcs(repoRoot)
+		assert.Nil(t, err, "could not load repo")
+
+		errAdd := repo.AddFile(filepath.Join(repoRoot, "roses.poem"))
+		assert.Nil(t, errAdd, "could not add file")
+
+		assertDiffExists(t, repoRoot, "0cec383d6dbf06d28eca96ed97009731")
+		assertDiffCount(t, repoRoot, 2)
+
+		copyFile(t, "roses.poem.v2", "roses.poem", repoRoot)
+
+		errAdd2 := repo.AddFile(filepath.Join(repoRoot, "roses.poem"))
+		assert.Nil(t, errAdd2, "could not add file")
+
+		assertDiffExists(t, repoRoot, "d75ca5a8e9ab86b805477a3e9dcf79f6")
+		assertDiffCount(t, repoRoot, 2)
+
+		assert.Equal(t, "e1b6c40933692f4d2db4818930293d9e", calculateRepoHash(t, repoRoot))
+	})
+
+	t.Run("StatAndListCommitsProvideCorrectInfo", func(t *testing.T) {
+		repo, err := govcs.LoadDefaultVcs(repoRoot)
+		assert.Nil(t, err, "could not load repo")
+
+		stat, errStat := repo.Stat()
+		assert.Nil(t, errStat, "could not stat repo")
+		assert.Equal(t, "bb2543aa0c914a7cbc18842efeff0288", stat.Ref, "wrong head")
+		assert.Len(t, stat.ChangedFiles, 1, "wrong changed files")
+
+		commits, errCommits := repo.ListCommits()
+		assert.Nil(t, errCommits, "could not get commits")
+		assert.Len(t, commits, 1, "wrong number of commits")
+
+		errCommit := repo.CommitChanges("initial commit")
+		assert.Nil(t, errCommit, "could not commit changes")
+
+		stat2, errStat2 := repo.Stat()
+		assert.Nil(t, errStat2, "could not stat repo")
+		assert.Equal(t, "7c95128e64bc9c779e915f36902962eb", stat2.Ref, "wrong head")
+		assert.Len(t, stat2.ChangedFiles, 0, "wrong changed files")
+
+		commits2, errCommits2 := repo.ListCommits()
+		assert.Nil(t, errCommits2, "could not get commits")
+		assert.Len(t, commits2, 2, "wrong number of commits")
+
+		assert.Equal(t, "3fbf079cb4ade102d723cdadb0c76c9b", calculateRepoHash(t, repoRoot))
+	})
+
+	t.Run("CanAddAndCommitFileThatAlreadyHasRevision", func(t *testing.T) {
+		repo, err := govcs.LoadDefaultVcs(repoRoot)
+		assert.Nil(t, err, "could not load repo")
+		copyFile(t, "test.txt.v2", "test.txt", repoRoot)
+
+		errAdd := repo.AddFile(filepath.Join(repoRoot, "test.txt"))
+		assert.Nil(t, errAdd, "could not add file")
+		assertDiffCount(t, repoRoot, 3)
+		errCommit := repo.CommitChanges("initial commit")
+		assert.Nil(t, errCommit, "could not commit changes")
+		assertDiffCount(t, repoRoot, 3)
+
+		assert.Equal(t, "485acb2cb79dda3a11a466bfdd4b9741", calculateRepoHash(t, repoRoot))
+	})
+
 	// This test case is left here to help with debugging
 	t.Run("ListResultingRepo", func(t *testing.T) {
 		listDir(t, ".govcs", filepath.Join(repoRoot, ".govcs"))
 		listDir(t, "diffs", filepath.Join(repoRoot, ".govcs", "diffs"))
 		listDir(t, "commits", filepath.Join(repoRoot, ".govcs", "commits"))
+		t.Log(calculateRepoHash(t, repoRoot))
 	})
 
 	// Teardown
@@ -123,6 +210,15 @@ func assertFileCountInDir(t *testing.T, path string, count int) {
 	files, err := ioutil.ReadDir(path)
 	assert.Nil(t, err, "failed to read dir")
 	assert.Equal(t, count, len(files), "count missmach")
+}
+
+func assertDiffExists(t *testing.T, repoRoot string, diff string) {
+	assertFileExists(t, filepath.Join(repoRoot, ".govcs", "diffs", diff))
+}
+
+func assertFileExists(t *testing.T, path string) {
+	_, err := os.Stat(path)
+	assert.True(t, !os.IsNotExist(err), "file does not exist")
 }
 
 func calculateRepoHash(t *testing.T, root string) string {

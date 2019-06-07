@@ -21,6 +21,18 @@ func AddDiffToIndex(fs metadata.Metadata, path, hash string) error {
 		return err
 	}
 
+	// If there is a previous revision of the file added
+	//	remove it
+	if diff := i.Diffs[path]; diff != "" {
+		// check if file changed
+		if diff != hash {
+			err := RemoveDiff(fs, diff)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
 	i.Diffs[path] = hash
 
 	return i.save(fs)
